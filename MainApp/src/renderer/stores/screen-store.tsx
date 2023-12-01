@@ -6,6 +6,6 @@ type ScreenState = {
 }
 
 export const useScreenStore = create<ScreenState>()((set)=>({
-  currentScreen:"U",
+  currentScreen:"C",
   setScreen:(s)=>set(()=>({currentScreen:s}))
 }))
