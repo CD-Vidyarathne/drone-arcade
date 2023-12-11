@@ -3,13 +3,19 @@ import {create} from 'zustand'
 
 type RepairState = {
   repair:Repair,
-  setRepair:(r:Repair)=>void
+  repairArr:Repair[],
+  setRepair:(r:Repair)=>void,
+  setRepairArr:(r:Repair[])=>void
 }
+let n:any="000";
+window.electron.ipcRenderer.sendMessage('ipc-get-last-jobNumber',[]);
+window.electron.ipcRenderer.on('ipc-got-last-jobNumber',(x)=>{
+  n = x;
+})
 
-export const useRepairStore = create<RepairState>()((set)=>({
-  repair:{
+export const initialState:Repair={
     branch : "",
-    jobNumber : "",
+    jobNumber : n,
     firstName : "",
     lastName : "",
     nic : "",
@@ -45,10 +51,19 @@ export const useRepairStore = create<RepairState>()((set)=>({
         chargingHub : false
     },
     description : "",
-    currentStage : ""
-  },
-  setRepair:(r)=>set(()=>({repair:r}))
+    currentStage : "Inspection Fee Paid",
+    date:""
+}
+
+export const useRepairStore = create<RepairState>()((set)=>({
+  repair:initialState,
+  repairArr:[],
+  setRepair:(r)=>set(()=>({repair:r})),
+  setRepairArr:(r)=>set(()=>({repairArr:r}))
 }))
+
+
+
 
 /*
  {

@@ -15,7 +15,6 @@ connectDB().catch(console.dir);
 const repairs = new Repairs();
 
 repairs.getAllRepairs();
-
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -59,6 +58,7 @@ const createWindow = async () => {
       mainWindow.minimize();
     } else {
       mainWindow.show();
+      repairs.getLastJobNumber();
     }
   });
 
@@ -123,6 +123,29 @@ ipcMain.on('ipc-app-ctl', async (event, args) => {
 
 
 ipcMain.on('ipc-insert-data',async(event,args)=>{
-  await repairs.insertRepair(args)
-  event.reply('ipc-success',[]);
+  try{
+   await repairs.insertRepair(args)
+   event.reply('ipc-response',true);
+  }catch(e){
+   event.reply('ipc-response',false);
+  }
+})
+
+ipcMain.on('ipc-get-last-jobNumber',async(event,args)=>{
+  const n:String = await repairs.getLastJobNumber();
+  event.reply('ipc-got-last-jobNumber',n);
+})
+
+ipcMain.on('ipc-update-data',async(event,args)=>{
+  try{
+    await repairs.updateRepair(args);
+    event.reply('ipc-response',true);
+  }catch(e){
+    event.reply('ipc-response',false);
+  }
+})
+
+ipcMain.on('ipc-get-job-by-number',async(event,args)=>{
+  const r:Repair = await repairs.getJobByJobNumber(args);
+  event.reply('ipc-got-job-by-number',r);
 })

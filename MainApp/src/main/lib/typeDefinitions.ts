@@ -39,5 +39,6 @@ export interface Repair{
         battery:boolean,
         chargingHub:boolean
     },
-  description:string
+  description:string,
+  date:string,
 }

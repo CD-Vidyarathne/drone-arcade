@@ -106,4 +106,5 @@ export type Repair={
         chargingHub:boolean
     },
   description:string
+  date:string
 }
