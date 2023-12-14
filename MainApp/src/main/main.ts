@@ -1,20 +1,20 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, IpcMainEvent } from 'electron';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { connectDB } from './lib/mongo';
 import { Repair } from './lib/typeDefinitions';
 import { Repairs } from './models/Repairs';
+import { loadingProgress } from './lib/utilFuncs';
 
 let mainWindow: BrowserWindow | null = null;
-connectDB().catch(console.dir);
 
+let DB_CONNECTED = false;
 const repairs = new Repairs();
 
-repairs.getAllRepairs();
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -121,31 +121,68 @@ ipcMain.on('ipc-app-ctl', async (event, args) => {
   }
 });
 
-
-ipcMain.on('ipc-insert-data',async(event,args)=>{
-  try{
-   await repairs.insertRepair(args)
-   event.reply('ipc-response',true);
-  }catch(e){
-   event.reply('ipc-response',false);
+ipcMain.on('ipc-connect-db', async (event, args) => {
+  loadingProgress(event, true, 's');
+  if (!DB_CONNECTED) {
+    try {
+      await connectDB();
+    } catch (err) {
+      log.info(err);
+      event.reply('ipc-db-failed');
+    }
   }
-})
+  loadingProgress(event, false, 's');
+});
 
-ipcMain.on('ipc-get-last-jobNumber',async(event,args)=>{
-  const n:String = await repairs.getLastJobNumber();
-  event.reply('ipc-got-last-jobNumber',n);
-})
+ipcMain.on('ipc-insert-data', async (event, args) => {
+  loadingProgress(event, true, 'l');
+  log.info('>>Inserting');
+  try {
+    await repairs.insertRepair(args);
+    event.reply('ipc-response', true);
+    log.info('>>Successfully Inserted');
+  } catch (e) {
+    event.reply('ipc-response', false);
+  }
+  loadingProgress(event, false, 'l');
+});
 
-ipcMain.on('ipc-update-data',async(event,args)=>{
-  try{
+ipcMain.on('ipc-get-last-jobNumber', async (event, args) => {
+  const n: String = await repairs.getLastJobNumber();
+  event.reply('ipc-got-last-jobNumber', n);
+});
+
+ipcMain.on('ipc-update-data', async (event, args) => {
+  log.info('>>Updating');
+  loadingProgress(event, true, 'l');
+  try {
     await repairs.updateRepair(args);
-    event.reply('ipc-response',true);
-  }catch(e){
-    event.reply('ipc-response',false);
+    log.info('>>Successfully Updated');
+    event.reply('ipc-response', true);
+  } catch (e) {
+    event.reply('ipc-response', false);
+    log.info(e);
   }
-})
+  loadingProgress(event, false, 'l');
+});
 
-ipcMain.on('ipc-get-job-by-number',async(event,args)=>{
-  const r:Repair = await repairs.getJobByJobNumber(args);
-  event.reply('ipc-got-job-by-number',r);
-})
+ipcMain.on('ipc-get-job-by-number', async (event, args) => {
+  log.info(`>>Finding Job Number ${args}`);
+  loadingProgress(event, true, 'l');
+  try {
+    const r: Repair = await repairs.getJobByJobNumber(args);
+    event.reply('ipc-got-job-by-number', r);
+  } catch (err) {
+    event.reply('ipc-response', false);
+    log.info(err);
+  }
+  loadingProgress(event, false, 'l');
+});
+
+ipcMain.on('ipc-get-jobs-by-stage', async (event, args) => {
+  log.info('>>Filtering Jobs');
+  loadingProgress(event, true, 'l');
+  const r: Repair[] = await repairs.getJobsByStage(args);
+  event.reply('ipc-got-jobs-by-stage', r);
+  loadingProgress(event, false, 'l');
+});

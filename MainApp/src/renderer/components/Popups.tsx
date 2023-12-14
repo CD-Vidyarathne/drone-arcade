@@ -22,6 +22,27 @@ export function FailedInsertPopup() {
     </div>
   );
 }
+export function MongoFailedPopup() {
+  return (
+    <div>
+      <dialog id="mongo_failed_popup" className="modal">
+        <form method="dialog" className="modal-box">
+          <h3 className="font-bold text-lg text-red-600">Warning!</h3>
+          <p className="py-4">
+            Couldn't Connect to Database. Please Try again.
+          </p>
+          <p className="text-xs text-gray-700">
+            *Make sure you got internet connection.
+            If the error persists, Please contact the developer.
+          </p>
+          <div className="modal-action">
+            <button className="btn btn-error rounded-[1rem] hover:scale-110">OK</button>
+          </div>
+        </form>
+      </dialog>
+    </div>
+  );
+}
 
 export function SuccessInsertPopup() {
   return (
@@ -59,7 +80,7 @@ export function PreviewPopup({ f }: PreviewPopupProps) {
                 key={index}
               >
                 <h3 className="font-bold">{key.toUpperCase()} : </h3>
-                <p>
+                <div>
                   {typeof value === 'object'
                     ? Object.entries(value).map(([k, v], index) => {
                         return (
@@ -73,7 +94,7 @@ export function PreviewPopup({ f }: PreviewPopupProps) {
                         );
                       })
                     : value}
-                </p>
+                </div>
               </div>
             );
           })}

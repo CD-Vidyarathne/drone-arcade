@@ -2,7 +2,7 @@ import { Repair } from '../config/types';
 
 type SingleJobProps = {
   r: Repair;
-  setRepair: (x: Repair) => void;
+  setRepair: any;
 };
 
 const SingleJob = ({ r, setRepair }: SingleJobProps) => {
@@ -12,6 +12,12 @@ const SingleJob = ({ r, setRepair }: SingleJobProps) => {
         <p className="font-bold text-gray-400">
           <span className="mr-1">•</span>
           Branch : <span className="font-light text-black">{r?.branch}</span>
+        </p>
+      </div>
+      <div className="py-1">
+        <p className="font-bold text-gray-400">
+          <span className="mr-1">•</span>
+          Job Number : <span className="font-light text-black">{r?.jobNumber}</span>
         </p>
       </div>
       <div className="py-1">

@@ -1,11 +1,14 @@
+import {useEffect} from 'react';
 import { ACCESSORY_LIST } from '../config/types';
 import { useRepairStore, initialState } from '../stores/repair-store';
 import { FailedInsertPopup, PreviewPopup, SuccessInsertPopup } from './Popups';
 
 const CreateNewScreen: React.FC = () => {
   const { repair, setRepair } = useRepairStore();
-  window.electron.ipcRenderer.sendMessage('ipc-get-last-jobNumber');
-  console.log()
+
+  useEffect(()=>{
+   window.electron.ipcRenderer.sendMessage('ipc-get-last-jobNumber');
+  },[])
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement>,
     inputName: string,
@@ -44,6 +47,7 @@ const CreateNewScreen: React.FC = () => {
       ...repair,
       jobNumber: (Number(n)+1).toString(),
     });
+    return;
   });
 
   window.electron.ipcRenderer.on('ipc-response', (a) => {
@@ -53,6 +57,7 @@ const CreateNewScreen: React.FC = () => {
       window.electron.ipcRenderer.sendMessage('ipc-get-last-jobNumber');
     } else {
     }
+    return;
   });
 
   const createNew = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -296,7 +301,7 @@ const CreateNewScreen: React.FC = () => {
             <span className="font-bold">:</span>
             <div className="flex gap-4 flex-wrap">
               {ACCESSORY_LIST.map((ac) => (
-                <div className="flex w-[200px] items-center justify-between gap-3">
+                <div key={ac.x} className="flex w-[200px] items-center justify-between gap-3">
                   <label className=" text-start font-bold whitespace-nowrap">
                     {ac.name}
                   </label>

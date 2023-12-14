@@ -42,7 +42,7 @@ export class Repairs {
         },
       },
       false,
-      false
+      false,
     );
   };
 
@@ -57,5 +57,19 @@ export class Repairs {
     const repairs = await this.#getCollection();
     let res = await repairs.findOne({ jobNumber: `${n}` });
     return res;
+  };
+
+  getJobsByStage = async (c: String): Promise<Repair[]> => {
+    const repairs = await this.#getCollection();
+    let res = await repairs
+      .find({ currentStage: `${c}` })
+      .sort({ _id: -1 })
+      .toArray();
+    const r: Repair[] = res.map((rep: any) => {
+      const { _id, ...rest } = rep;
+      return rest;
+    });
+    console.log(r);
+    return r;
   };
 }

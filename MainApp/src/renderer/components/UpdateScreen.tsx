@@ -1,31 +1,33 @@
 import { FailedInsertPopup, SuccessInsertPopup } from './Popups';
 import SingleJob from './SingleJob';
 import { useRepairStore, initialState } from '../stores/repair-store';
+import { useState } from 'react';
 import { Repair } from '../config/types';
 
 const UpdateScreen = () => {
-  const { repair, setRepair } = useRepairStore();
+  const [updatedRepair, setUpdatedRepair] = useState<Repair>(initialState);
+  const [num, setNum] = useState('');
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setRepair({ ...repair, jobNumber: e.target.value });
+    setNum(e.target.value);
   };
 
   const handleUpdate = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    console.log("Button Clicked")
-    window.electron.ipcRenderer.sendMessage('ipc-update-data', repair);
+    window.electron.ipcRenderer.sendMessage('ipc-update-data', updatedRepair);
   };
-
   window.electron.ipcRenderer.on('ipc-got-job-by-number', (r: Repair) => {
-    setRepair(r);
+    if (!r.date) {
+      window.failed_insert_popup.showModal();
+      return;
+    } else {
+      setUpdatedRepair(r);
+    }
   });
 
   const getJobByJobNumber = (): void => {
-    if (repair.jobNumber == '') return;
-    window.electron.ipcRenderer.sendMessage(
-      'ipc-get-job-by-number',
-      repair.jobNumber,
-    );
+    if (num == '') return;
+    window.electron.ipcRenderer.sendMessage('ipc-get-job-by-number', num);
   };
 
   return (
@@ -38,6 +40,7 @@ const UpdateScreen = () => {
         <input
           className="w-50% bg-white-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 focus:outline-none focus:border-blue-500"
           onChange={(e) => handleInput(e)}
+          value={num}
         />
         <button
           className="btn w-[10rem] btn-accent rounded-lg"
@@ -47,8 +50,8 @@ const UpdateScreen = () => {
         </button>
       </div>
       <div className="text-lg w-full h-full border-dashed rounded-lg border-2 border-gray-500 my-[1rem] p-1">
-        {repair.date != '' ? (
-          <SingleJob r={repair} setRepair={setRepair} />
+        {updatedRepair.date != '' ? (
+          <SingleJob r={updatedRepair} setRepair={setUpdatedRepair} />
         ) : (
           <></>
         )}
