@@ -194,7 +194,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "./assets/logo.png"
     },
     "linux": {
       "target": [

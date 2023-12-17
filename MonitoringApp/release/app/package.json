@@ -1,11 +1,11 @@
 {
-  "name": "Drone Arcade Repair Management System",
+  "name": "drone-arcade-monitor-app",
   "version": "1.0.0",
   "description": "Drone Arcade Repair Management System",
   "license": "MIT",
   "author": {
     "name": "Chamindu Vidyarathne",
-    "email":"chamindudvidyarathne@gmail.com"
+    "email": "chamindudvidyarathne@gmail.com"
   },
   "main": "./dist/main/main.js",
   "scripts": {

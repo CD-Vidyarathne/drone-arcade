@@ -194,13 +194,19 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "./assets/logo.png"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
       "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
     },
     "directories": {
       "app": "release/app",
