@@ -37,6 +37,7 @@ const createWindow = async () => {
   };
 
   mainWindow = new BrowserWindow({
+    icon:path.join(getAssetPath(),"logo.png"),
     show: false,
     width: 1024,
     height: 728,
@@ -122,13 +123,22 @@ ipcMain.on('ipc-app-ctl', async (event, args) => {
 
 const getRepairs = async(event:IpcMainEvent)=>{
   try{
+    log.info('Refreshing Data...')
   let r : Repair[] = await repairs.getAllRepairs();
-  console.log(r);
   event.reply('ipc-repairs',r);
   }catch(err){
     console.log(err);
   }
 }
+
+ipcMain.on('ipc-get-repairs',async(event,args)=>{
+  try{
+    getRepairs(event);
+  }catch(err){
+    log.info(err);
+    event.reply('ipc-db-failed');
+  }
+})
 
 ipcMain.on('ipc-connect-db', async (event, args) => {
   loadingProgress(event, true, 's');

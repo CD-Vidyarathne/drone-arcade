@@ -60,7 +60,7 @@ export default function App() {
 
 
   return (
-    <main className="App">
+    <main className="App-Screen">
       <TitleBar />
       {loadingScreen && currentLoadingScreen == 's' ? (
         <StartingScreen />

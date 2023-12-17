@@ -22,6 +22,29 @@ export function FailedInsertPopup() {
     </div>
   );
 }
+
+export function CannotFindJobPopup(){
+  return(
+    <div>
+      <dialog id="cannot_find_job_popup" className="modal">
+        <form method="dialog" className="modal-box">
+          <h3 className="font-bold text-lg text-red-600">Warning!</h3>
+          <p className="py-4">
+            Job Not found. Make sure the job number is correct.
+          </p>
+          <p className="text-xs text-gray-700">
+            *Make sure you got internet connection.
+            If the error persists, Please contact the developer.
+          </p>
+          <div className="modal-action">
+            <button className="btn btn-error rounded-[1rem] hover:scale-110">OK</button>
+          </div>
+        </form>
+      </dialog>
+    </div>
+  )
+}
+
 export function MongoFailedPopup() {
   return (
     <div>

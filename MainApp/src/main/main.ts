@@ -38,6 +38,7 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
+    icon: path.join(getAssetPath(), 'logo.png'),
     width: 1024,
     height: 728,
     titleBarStyle: 'hidden',
@@ -171,6 +172,10 @@ ipcMain.on('ipc-get-job-by-number', async (event, args) => {
   loadingProgress(event, true, 'l');
   try {
     const r: Repair = await repairs.getJobByJobNumber(args);
+    if(r.jobNumber==""){
+      event.reply('ipc-response',false);
+      return;
+    }
     event.reply('ipc-got-job-by-number', r);
   } catch (err) {
     event.reply('ipc-response', false);
@@ -182,7 +187,12 @@ ipcMain.on('ipc-get-job-by-number', async (event, args) => {
 ipcMain.on('ipc-get-jobs-by-stage', async (event, args) => {
   log.info('>>Filtering Jobs');
   loadingProgress(event, true, 'l');
+  try{
   const r: Repair[] = await repairs.getJobsByStage(args);
   event.reply('ipc-got-jobs-by-stage', r);
+  }catch(err){
+    log.info(err);
+    event.reply('ipc-response',false);
+  }
   loadingProgress(event, false, 'l');
 });

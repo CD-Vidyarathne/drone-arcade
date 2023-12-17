@@ -18,7 +18,7 @@ export default function App() {
     setTimeout(()=>{setLoadingScreen(false)},2000);
   },[])
 
-
+  setInterval(()=>window.electron.ipcRenderer.sendMessage('ipc-get-repairs'),30000);
 
 
   return (
